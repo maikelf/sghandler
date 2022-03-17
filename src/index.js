@@ -41,7 +41,7 @@ export class dashboard {
         data.iteration = new Date().getTime();
 
         // -- PANELS --
-        const panels =  data?.panels;
+        const panels =  data.panels;
 
         panels.forEach(p => {
             if (p.datasource) { 
@@ -66,7 +66,7 @@ export class dashboard {
         data.panels = panels;
 
         // -- TEMPLATING --
-        const templatingList = data?.templating?.list;
+        const templatingList = data.templating.list;
 
         templatingList.forEach(tl => {
             if (tl.name === "dataset_id" && this.blackList.indexOf(tl.query) === -1) {
@@ -189,7 +189,7 @@ export class dashboard {
                 let previusData = {id: null, version: null};
 
                 if (Array.isArray(datasetPreviusDashboard)) {
-                    const pd = datasetPreviusDashboard.find(d => d?.template_name === e.template_name);
+                    const pd = datasetPreviusDashboard.find(d => d.template_name === e.template_name);
                     if (pd) {
                         previusData = { id: pd.id, version: pd.version };
                     }
