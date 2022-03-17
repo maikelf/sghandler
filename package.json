@@ -1,5 +1,5 @@
 {
-  "name": "sghandler",
+  "name": "@maikelf/sghandler",
   "version": "1.0.0",
   "description": "",
   "main": "dist/index.js",
@@ -23,5 +23,6 @@
   },
   "devDependencies": {
     "microbundle": "^0.14.2"
-  }
+  },
+  "files": ["dist", "package.json", "README.md", "LICENCE"]
 }
