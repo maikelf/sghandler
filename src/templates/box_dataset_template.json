@@ -1,0 +1,109 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "target": {
+          "limit": 100,
+          "matchAny": false,
+          "tags": [],
+          "type": "dashboard"
+        },
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "iteration": 1647389618703,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "9H1scz-7k"
+      },
+      "gridPos": {
+        "h": 22,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 5,
+      "options": {
+        "config": "",
+        "layout": "",
+        "onclick": "console.log(data)\nwindow.updateVariables({query:{'var-project':'test'}, partial: true})",
+        "script": "// Parameters Initialization\nvar data_list = [];\n\n// Create internal variables\nvar dataset_id = variables.dataset_id\ndataset_id = dataset_id.replaceAll(\"\\\"\", \"\");\n\n// Get x axis series index\nfor(serie_index=0; serie_index < data.series.length; serie_index++){\n\t// Get serie name\n\tvar series_name = data.series[serie_index].name;\n\tfeature_name = series_name.replace(dataset_id + \".\", \"\");\n\tfeature_name = feature_name.replace(\"mean_\", \"\");\n\t\n\t// Create trace\n\tvar trace = {\n\t\tx: data.series[serie_index].fields[1].values.buffer,\n\t\ttype: \"box\",\n\t\tname: feature_name\n\t};\n\t\n\t// Add to data list\n\tdata_list.push(trace);\n}\n\n\nconsole.log(data_list)\n// Create layout object\nlayout = {\n\t\"margin\": {\"b\": 30, \"t\": 30},\n\t\"xaxis\": {\n\t\t\"automargin\": true,\n\t\t\"title\": {\n\t\t\t\"font\": {\n\t\t\t\t\"size\": 10\n\t\t\t}\n\t\t},\n\t\t\"type\": \"linear\"\n\t},\n\t\"yaxis\": {\n\t\t\"automargin\": true,\n\t\t\"title\": {\n\t\t\t\"font\": {\n\t\t\t\t\"color\": \"424242\",\n\t\t\t\t\"size\": 10\n\t\t\t}\n\t\t},\n\t\t\"type\": \"category\"\n\t}\n}\n\nreturn {data:data_list,layout:layout};"
+      },
+      "targets": [
+        {
+          "alias": "",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "9H1scz-7k"
+          },
+          "groupBy": [],
+          "measurement": "DATASET_DEM_CSV-1644854403232",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "query": "SELECT mean(*) FROM $dataset_id WHERE $timeFilter GROUP BY time(1m) fill(null)",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "SENSORS.SPEED"
+                ],
+                "type": "field"
+              }
+            ]
+          ],
+          "tags": []
+        }
+      ],
+      "title": "Box Plot",
+      "transformations": [],
+      "type": "ae3e-plotly-panel"
+    }
+  ],
+  "refresh": "",
+  "schemaVersion": 34,
+  "style": "dark",
+  "tags": [],
+  "templating": {
+    "list": [
+      {
+        "hide": 2,
+        "name": "dataset_id",
+        "query": "\"DATASET_DEM_HOTDATA-1644879962205\"",
+        "skipUrlSync": false,
+        "type": "constant"
+      }
+    ]
+  },
+  "time": {
+    "from": "2022-02-14T04:35:01.500Z",
+    "to": "2022-02-14T05:14:57.500Z"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "box_dataset_template",
+  "uid": null,
+  "version": 0,
+  "weekStart": "",
+  "datasource_replace": {
+    "type": ["influxdb", "mysql"],
+    "datasource_name": ["sorba_ml", "sorba_ml_mysql"]
+  }
+}

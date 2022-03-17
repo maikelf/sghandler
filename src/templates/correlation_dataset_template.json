@@ -1,0 +1,114 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "target": {
+          "limit": 100,
+          "matchAny": false,
+          "tags": [],
+          "type": "dashboard"
+        },
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "iteration": 1646418459358,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "datasource": {
+        "type": "mysql",
+        "uid": "9mvtVwBnz"
+      },
+      "gridPos": {
+        "h": 22,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 2,
+      "options": {
+        "config": "",
+        "onclick": "console.log(data)\nwindow.updateVariables({query:{'var-project':'test'}, partial: true})",
+        "script": "// Parameters Initialization\nvar dashboard_data = data.series[0].fields[0].values.buffer[0]\nvar dashboard_data_obj = JSON.parse(dashboard_data)\nvar tags_x = dashboard_data_obj.correlation.tags_x\nvar tags_y = dashboard_data_obj.correlation.tags_y\nvar corr_values = dashboard_data_obj.correlation.corr_values\nvar index_list = []\nvar tags_with_index_list = []\n\n// Create tag index list\nfor(i=0; i < tags_x.length; i++){\n\tindex_list.push((i+1).toString())\n\ttags_with_index_list.push(tags_x[i] + \" (\" + (i+1).toString() + \")\")\n}\n\n// Create trace\nvar trace = {\n\tx: index_list,\n\ty: tags_with_index_list,\n  z: corr_values,\n  zmax: 1,\n  zmin: -1,\n  colorscale: 'Jet',\n  type: 'heatmap',\n  hoverongaps: false\n};\n\n// Create layout object\nlayout = {\n\t\"margin\": {\"b\": 30, \"t\": 30},\n\t\"xaxis\": {\n    \"autorange\": true,\n\t\t\"showspikes\": true,\n\t\t\"automargin\": true,\n\t\t\"dtick\": 1,\n\t\t\"title\": {\n\t\t\t\"font\": {\n\t\t\t\t\"size\": 10\n\t\t\t}\n\t\t},\n\t\t\"type\": \"category\"\n\t},\n\t\"yaxis\": {\n\t\t\"autorange\": true,\n\t\t\"showspikes\": true,\n\t\t\"automargin\": true,\n\t\t\"scaleanchor\": \"x\",\n\t\t\"dtick\": 1,\n\t\t\"title\": {\n\t\t\t\"font\": {\n\t\t\t\t\"color\": \"424242\",\n\t\t\t\t\"size\": 10\n\t\t\t}\n\t\t},\n\t\t\"type\": \"category\"\n\t}\n}\n\nreturn {data:[trace],layout:layout};"
+      },
+      "pluginVersion": "8.3.4",
+      "targets": [
+        {
+          "datasource": {
+            "type": "mysql",
+            "uid": "9mvtVwBnz"
+          },
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  dashboard_data\nFROM ml_trainer.datasets\nWHERE\n  id=$dataset_id",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "uid"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "datasets",
+          "timeColumn": "createdAt",
+          "timeColumnType": "datetime",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "title": "Correlation",
+      "type": "ae3e-plotly-panel"
+    }
+  ],
+  "refresh": false,
+  "schemaVersion": 34,
+  "style": "dark",
+  "tags": [],
+  "templating": {
+    "list": [
+      {
+        "hide": 2,
+        "name": "dataset_id",
+        "query": "\"DATASET_DEM_CSV_NO_TS-1644878607515\"",
+        "skipUrlSync": false,
+        "type": "constant"
+      }
+    ]
+  },
+  "time": {
+    "from": "2022-02-26T14:12:17.041Z",
+    "to": "2022-03-02T14:12:17.057Z"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "correlation_dataset_template",
+  "uid": null,
+  "version": 0,
+  "weekStart": "",
+  "datasource_replace": {
+    "type": ["influxdb", "mysql"],
+    "datasource_name": ["sorba_ml", "sorba_ml_mysql"]
+  }
+}

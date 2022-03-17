@@ -1,0 +1,193 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "target": {
+          "limit": 100,
+          "matchAny": false,
+          "tags": [],
+          "type": "dashboard"
+        },
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "iteration": 1646418462682,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "datasource": {
+        "type": "mysql",
+        "uid": "9mvtVwBnz"
+      },
+      "gridPos": {
+        "h": 12,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 2,
+      "options": {
+        "config": "",
+        "onclick": "console.log(data)\nwindow.updateVariables({query:{'var-project':'test'}, partial: true})",
+        "script": "// Parameters Initialization\nvar dashboard_data = data.series[0].fields[0].values.buffer[0]\nvar dashboard_data_obj = JSON.parse(dashboard_data)\nvar target_features_list = dashboard_data_obj.tag_ranking.target_features\nvar input_features_list = dashboard_data_obj.tag_ranking.input_features\nvar tag_ranking_values_list = dashboard_data_obj.tag_ranking.tag_ranking_values\n\n// Create internal variables\nvar target_feature = variables.target_feature\n\n// Get list index of matching target\ntarget_index = target_features_list.indexOf(target_feature)\n\nconsole.log(input_features_list[target_index])\nconsole.log(tag_ranking_values_list[target_index])\n// Create trace\nvar trace = {\n  x: input_features_list[target_index],\n\ty: tag_ranking_values_list[target_index],\n  zmax: 100,\n  zmin: 0,\n  colorscale: 'Jet',\n  type: 'bar',\n  showscale: true,\n  hoverongaps: false\n};\n\n// Create layout object\nlayout = {\n\t\"margin\": {\"b\": 30, \"t\": 30},\n\t\"xaxis\": {\n\t\t\"showgrid\": false,\n\t\t\"type\": \"category\"\n\t},\n\t\"yaxis\": {\n\t\t\"showgrid\": false,\n\t\t\"type\": \"linear\"\n\t\t//\"title\": {\n\t\t//\t\"text\": \"Tag Ranking (%)\"\n\t\t//}\n\t}\n}\n\nreturn {data:[trace],layout:layout};"
+      },
+      "pluginVersion": "8.3.4",
+      "targets": [
+        {
+          "datasource": {
+            "type": "mysql",
+            "uid": "9mvtVwBnz"
+          },
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  dashboard_data\nFROM ml_trainer.datasets\nWHERE\n  id=$dataset_id",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "uid"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "datasets",
+          "timeColumn": "createdAt",
+          "timeColumnType": "datetime",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "title": "Tag Ranking (%)",
+      "type": "ae3e-plotly-panel"
+    },
+    {
+      "datasource": {
+        "type": "mysql",
+        "uid": "9mvtVwBnz"
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 12
+      },
+      "id": 3,
+      "options": {
+        "config": "",
+        "onclick": "console.log(data)\nwindow.updateVariables({query:{'var-project':'test'}, partial: true})",
+        "script": "// Parameters Initialization\nvar dashboard_data = data.series[0].fields[0].values.buffer[0]\nvar dashboard_data_obj = JSON.parse(dashboard_data)\nvar target_features_list = dashboard_data_obj.tag_ranking.target_features\nvar input_features_list = dashboard_data_obj.tag_ranking.input_features\nvar tag_ranking_values_list = dashboard_data_obj.tag_ranking.tag_ranking_values\nvar dimensions_list = [];\n\n// Create internal variables\nvar current_target_feature = variables.target_feature\n\nfor(target_feature_index=0; target_feature_index < target_features_list.length; target_feature_index++){\n\tif(target_features_list[target_feature_index].search(current_target_feature) != -1){\n\t\tvar current_target_tag_ranking_values = tag_ranking_values_list[target_feature_index]\n\t\ttag_ranking_values_list.splice(target_feature_index,1)\n\t\ttarget_features_list.splice(target_feature_index,1)\n\t}\n}\n\n// Get x axis series index\nfor(target_feature_index=0; target_feature_index < target_features_list.length; target_feature_index++){\n\t// Get serie name\n\tvar target_feature = target_features_list[target_feature_index];\n\t\n\t// Add to dimensions list\n\tdimensions_list.push({label: target_feature, values: tag_ranking_values_list[target_feature_index]});\n}\n\n// Add to current target as last elemnt of dimensions list\ndimensions_list.push({label: current_target_feature, values: current_target_tag_ranking_values});\n\n// Create trace\nvar trace = {\n\ttype: \"parcoords\",\n\tdimensions: dimensions_list\n};\n\n// Create layout object\nlayout = {\n\t\"margin\": {\"b\": 20, \"t\": 35, \"l\": 90},\n\t\"font\": {\"size\": 11},\n\t\"paper_bgcolor\": \"rgba(0,0,0,0)\",\n\t\"plot_bgcolor\": \"rgba(0,0,0,0)\"\n}\n\nreturn {data:[trace],layout:layout};"
+      },
+      "pluginVersion": "8.3.4",
+      "targets": [
+        {
+          "datasource": {
+            "type": "mysql",
+            "uid": "9mvtVwBnz"
+          },
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  dashboard_data\nFROM ml_trainer.datasets\nWHERE\n  id=$dataset_id",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "uid"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "datasets",
+          "timeColumn": "createdAt",
+          "timeColumnType": "datetime",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "title": "Parallel Coordinates - Tag Ranking (%)",
+      "type": "ae3e-plotly-panel"
+    }
+  ],
+  "refresh": "",
+  "schemaVersion": 34,
+  "style": "dark",
+  "tags": [],
+  "templating": {
+    "list": [
+      {
+        "hide": 2,
+        "name": "dataset_id",
+        "query": "\"DATASET_DEM_CSV_NO_TS-1644878607515\"",
+        "skipUrlSync": false,
+        "type": "constant"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "CURRENT",
+          "value": "CURRENT"
+        },
+        "datasource": {
+          "type": "influxdb",
+          "uid": "9H1scz-7k"
+        },
+        "definition": "SHOW FIELD KEYS ON sorba_ml FROM ${dataset_id}",
+        "hide": 0,
+        "includeAll": false,
+        "label": "Target Feature",
+        "multi": false,
+        "name": "target_feature",
+        "options": [],
+        "query": "SHOW FIELD KEYS ON sorba_ml FROM ${dataset_id}",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      }
+    ]
+  },
+  "time": {
+    "from": "2022-02-28T07:51:06.009Z",
+    "to": "2022-02-28T19:51:06.009Z"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "ranking_dataset_template",
+  "uid": null,
+  "version": 0,
+  "weekStart": "",
+  "datasource_replace": {
+    "type": ["influxdb", "mysql"],
+    "datasource_name": ["sorba_ml", "sorba_ml_mysql"]
+  }
+}

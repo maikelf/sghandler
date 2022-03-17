@@ -1,0 +1,220 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "target": {
+          "limit": 100,
+          "matchAny": false,
+          "tags": [],
+          "type": "dashboard"
+        },
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "iteration": 1647389634828,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "9H1scz-7k"
+      },
+      "gridPos": {
+        "h": 19,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 5,
+      "options": {
+        "config": "",
+        "layout": "",
+        "onclick": "console.log(data)\nwindow.updateVariables({query:{'var-project':'test'}, partial: true})",
+        "script": "// Parameters Initialization\nvar data_list = [];\nvar trace_no = 0\n\n// Create internal variables\nvar scatter_type = variables.scatter_type\n\nif(scatter_type == '2D'){\n\t// Parameters Initialization\n\tvar serie_x_index_list = []\n\tvar serie_y_index_list = []\n\n\t// Create internal variables\n\tvar x_axis_tmp = variables.x_axis\n\tvar y_axis_tmp = variables.y_axis\n\n\t// Convert x_axis to list if needed\n\tif(Array.isArray(x_axis_tmp)){\n\t\tvar x_axis = x_axis_tmp\n\t} else {\n\t\tvar x_axis = x_axis_tmp.split(',')\n\t}\n\n\t// Convert y_axis to list if needed\n\tif(Array.isArray(y_axis_tmp)){\n\t\tvar y_axis = y_axis_tmp\n\t} else {\n\t\tvar y_axis = y_axis_tmp.split(',')\n\t}\n\n\t// Check if x axis and y axis tags selected matched \n\tif(x_axis.length != y_axis.length){\n\t\tvar warn_msg = \"[Warning] Selected tags in X and Y axis do not matched\"\n\t\tconsole.log(warn_msg)\n\t} else {\n\t\tvar warn_msg = \"\"\n\t\t\n\t\t// Get x axis series index\n\t\tfor(xi=0, yi=0; xi < x_axis.length, yi < y_axis.length; xi++, yi++){\n\t\t\tfor(serie_index=0; serie_index < data.series.length; serie_index++){\n\t\t\t\t// Get serie name\n\t\t\t\tvar series_name = data.series[serie_index].name;\n\t\t\t\t\n\t\t\t\t// Get x axis index value on series list\n\t\t\t\tif(series_name.search(x_axis[xi]) != -1){\n\t\t\t\t\tserie_x_index_list.push(serie_index)\n\t\t\t\t}\n\t\t\t\t\n\t\t\t\t// Get y axis index value on series list\n\t\t\t\tif(series_name.search(y_axis[yi]) != -1){\n\t\t\t\t\tserie_y_index_list.push(serie_index)\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\n\t\t// Create traces\n\t\t//for(sxi=0, syi=0; sxi < serie_x_index_list.length, syi < serie_y_index_list.length; sxi++, syi++){\n\t\tfor(sxi=0; sxi < serie_x_index_list.length; sxi++){\n\t\t\t// Create trace\n\t\t\tvar trace = {\n\t\t\t\ttype: \"scatter\",\n\t\t\t\tmode: \"markers\",\n\t\t\t\tmarker: {\"size\": 5},\n\t\t\t\tname: \"Trace \" + trace_no.toString(),\n\t\t\t\tx: data.series[serie_x_index_list[sxi]].fields[1].values.buffer,\n\t\t\t\ty: data.series[serie_y_index_list[sxi]].fields[1].values.buffer\n\t\t\t};\n\t\t\t\n\t\t\t// Add to data list\n\t\t\tdata_list.push(trace);\n\t\t\t\n\t\t\t// Increase trace number\n\t\t\ttrace_no += 1;\n\t\t}\n\t}\n\n\t// Create layout object\n\tlayout = {\n\t\t\"title\": warn_msg,\n\t\t\"font\": {\"size\": 10},\n\t\t\"margin\": {\"b\": 30, \"t\": 30},\n\t\t\"paper_bgcolor\": \"rgba(0,0,0,0)\",\n\t\t\"plot_bgcolor\": \"rgba(0,0,0,0)\",\n\t\t\"xaxis\": {\n\t\t\t\"autorange\": true,\n\t\t\t\"showspikes\": true,\n\t\t\t\"title\": {\n\t\t\t\t\"font\": {\n\t\t\t\t\t\"size\": 15\n\t\t\t\t},\n\t\t\t\t\"text\": \"X\"\n\t\t\t},\n\t\t\t\"type\": \"linear\"\n\t\t},\n\t\t\"yaxis\": {\n\t\t\t\"autorange\": true,\n\t\t\t\"showspikes\": true,\n\t\t\t\"title\": {\n\t\t\t\t\"font\": {\n\t\t\t\t\t\"size\": 15\n\t\t\t\t},\n\t\t\t\t\"text\": \"Y\"\n\t\t\t},\n\t\t\t\"type\": \"linear\"\n\t\t}\n\t}\n} else if(scatter_type == '3D'){\n\t// Parameters Initialization\n\tvar serie_x_index_list = []\n\tvar serie_y_index_list = []\n\tvar serie_z_index_list = []\n\n\t// Create internal variables\n\tvar x_axis_tmp = variables.x_axis\n\tvar y_axis_tmp = variables.y_axis\n\tvar z_axis_tmp = variables.z_axis\n\t\n\t// Convert x_axis to list if needed\n\tif(Array.isArray(x_axis_tmp)){\n\t\tvar x_axis = x_axis_tmp\n\t} else {\n\t\tvar x_axis = x_axis_tmp.split(',')\n\t}\n\n\t// Convert y_axis to list if needed\n\tif(Array.isArray(y_axis_tmp)){\n\t\tvar y_axis = y_axis_tmp\n\t} else {\n\t\tvar y_axis = y_axis_tmp.split(',')\n\t}\n\n\t// Convert z_axis to list if needed\n\tif(Array.isArray(z_axis_tmp)){\n\t\tvar z_axis = z_axis_tmp\n\t} else {\n\t\tvar z_axis = z_axis_tmp.split(',')\n\t}\n\n\t// Check if x axis and y axis tags selected matched \n\tif((x_axis.length != y_axis.length) || \n\t\t(x_axis.length != z_axis.length) || \n\t\t(y_axis.length != z_axis.length)){\n\t\tvar warn_msg = \"[Warning] Selected tags in X, Y and Z axis do not matched\"\n\t\tconsole.log(warn_msg)\n\t} else {\n\t\tvar warn_msg = \"\"\n\t\t\n\t\t// Get x axis series index\n\t\tfor(xi=0, yi=0, zi=0; xi < x_axis.length, yi < y_axis.length, zi < z_axis.length; xi++, yi++, zi++){\n\t\t\tfor(serie_index=0; serie_index < data.series.length; serie_index++){\n\t\t\t\t// Get serie name\n\t\t\t\tvar series_name = data.series[serie_index].name;\n\t\t\t\t\n\t\t\t\t// Get x axis index value on series list\n\t\t\t\tif(series_name.search(x_axis[xi]) != -1){\n\t\t\t\t\tserie_x_index_list.push(serie_index)\n\t\t\t\t}\n\t\t\t\t\n\t\t\t\t// Get y axis index value on series list\n\t\t\t\tif(series_name.search(y_axis[yi]) != -1){\n\t\t\t\t\tserie_y_index_list.push(serie_index)\n\t\t\t\t}\n\t\t\t\t\n\t\t\t\t// Get z axis index value on series list\n\t\t\t\tif(series_name.search(z_axis[zi]) != -1){\n\t\t\t\t\tserie_z_index_list.push(serie_index)\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\n\t\t// Create traces\n\t\tfor(sxi=0; sxi < serie_x_index_list.length; sxi++){\n\t\t\t// Create trace\n\t\t\tvar trace = {\n\t\t\t\ttype: \"scatter3d\",\n\t\t\t\tmode: \"markers\",\n\t\t\t\topacity:0.8,\n\t\t\t\tmarker: {\"size\": 4},\n\t\t\t\tname: \"Trace \" + trace_no.toString(),\n\t\t\t\tx: data.series[serie_x_index_list[sxi]].fields[1].values.buffer,\n\t\t\t\ty: data.series[serie_y_index_list[sxi]].fields[1].values.buffer,\n\t\t\t\tz: data.series[serie_z_index_list[sxi]].fields[1].values.buffer\n\t\t\t};\n\t\t\t\n\t\t\t// Add to data list\n\t\t\tdata_list.push(trace);\n\t\t\t\n\t\t\t// Increase trace number\n\t\t\ttrace_no += 1;\n\t\t}\n\t}\n\n\t// Create layout object\n\tlayout = {\n\t\t\"title\": warn_msg,\n\t\t\"font\": {\"size\": 10},\n\t\t\"margin\": {\"b\": 30, \"t\": 30},\n\t\t\"scene\": {\n\t\t\t\"aspectmode\": \"auto\",\n\t\t\t\"aspectratio\": {\n\t\t\t\t\"x\": 1,\n\t\t\t\t\"y\": 1,\n\t\t\t\t\"z\": 1\n\t\t\t},\n\t\t\t\"camera\": {\n\t\t\t\t\"center\": {\n\t\t\t\t\t\"x\": 0,\n\t\t\t\t\t\"y\": 0,\n\t\t\t\t\t\"z\": 0\n\t\t\t\t},\n\t\t\t\t\"eye\": {\n\t\t\t\t\t\"x\": 2.208561547005106,\n\t\t\t\t\t\"y\": 1.515397763939418,\n\t\t\t\t\t\"z\": 1.5183744915217012\n\t\t\t\t},\n\t\t\t\t\"projection\": {\n\t\t\t\t\t\"type\": \"perspective\"\n\t\t\t\t},\n\t\t\t\t\"up\": {\n\t\t\t\t\t\"x\": 0,\n\t\t\t\t\t\"y\": 0,\n\t\t\t\t\t\"z\": 1\n\t\t\t\t}\n\t\t\t},\n\t\t\t\"xaxis\": {\n\t\t\t\t\"autorange\": true,\n\t\t\t\t\"showgrid\": true,\n\t\t\t\t\"showspikes\": true,\n\t\t\t\t\"title\": {\n\t\t\t\t\t\"font\": {\n\t\t\t\t\t\t\t\"size\": 15\n\t\t\t\t\t},\n\t\t\t\t\t\"text\": \"X\"\n\t\t\t\t},\n\t\t\t\t\"type\": \"linear\"\n\t\t\t},\n\t\t\t\"yaxis\": {\n\t\t\t\t\"autorange\": true,\n\t\t\t\t\"showgrid\": true,\n\t\t\t\t\"showspikes\": true,\n\t\t\t\t\"title\": {\n\t\t\t\t\t\"font\": {\n\t\t\t\t\t\t\t\"size\": 15\n\t\t\t\t\t},\n\t\t\t\t\t\"text\": \"Y\"\n\t\t\t\t},\n\t\t\t\t\"type\": \"linear\"\n\t\t\t},\n\t\t\t\"zaxis\": {\n\t\t\t\t\"autorange\": true,\n\t\t\t\t\"showgrid\": true,\n\t\t\t\t\"showspikes\": true,\n\t\t\t\t\"title\": {\n\t\t\t\t\t\"font\": {\n\t\t\t\t\t\t\"size\": 15\n\t\t\t\t\t},\n\t\t\t\t\t\"text\": \"Z\"\n\t\t\t\t},\n\t\t\t\t\"type\": \"linear\"\n\t\t\t}\n\t\t}\n\t}\n} else {\n\tvar warn_msg = \"[Error] Unsupported scatter plot type selected\"\n\tconsole.log(warn_msg)\n\t\n\t// Create layout object\n\tlayout = {\n\t\t\"title\": warn_msg,\n\t\t\"font\": {\"size\": 10},\n\t\t\"margin\": {\"b\": 30, \"t\": 30},\n\t\t\"paper_bgcolor\": \"rgba(0,0,0,0)\",\n\t\t\"plot_bgcolor\": \"rgba(0,0,0,0)\",\n\t}\n}\n\nreturn {data:data_list,layout:layout};"
+      },
+      "targets": [
+        {
+          "alias": "",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "9H1scz-7k"
+          },
+          "groupBy": [],
+          "measurement": "DATASET_DEM_CSV-1644854403232",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "query": "SELECT mean(*) FROM $dataset_id WHERE $timeFilter GROUP BY time(1m) fill(null)",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "SENSORS.SPEED"
+                ],
+                "type": "field"
+              }
+            ]
+          ],
+          "tags": []
+        }
+      ],
+      "title": "Scatter Plot 3D",
+      "transformations": [],
+      "type": "ae3e-plotly-panel"
+    }
+  ],
+  "refresh": false,
+  "schemaVersion": 34,
+  "style": "dark",
+  "tags": [],
+  "templating": {
+    "list": [
+      {
+        "hide": 2,
+        "name": "dataset_id",
+        "query": "\"DATASET_DEM_HOTDATA-1644879962205\"",
+        "skipUrlSync": false,
+        "type": "constant"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "2D",
+          "value": "2D"
+        },
+        "hide": 0,
+        "includeAll": false,
+        "multi": false,
+        "name": "scatter_type",
+        "options": [
+          {
+            "selected": true,
+            "text": "2D",
+            "value": "2D"
+          },
+          {
+            "selected": false,
+            "text": "3D",
+            "value": "3D"
+          }
+        ],
+        "query": "2D,3D",
+        "queryValue": "",
+        "skipUrlSync": false,
+        "type": "custom"
+      },
+      {
+        "current": {
+          "selected": true,
+          "text": [
+            "ML145.MOTOR.SENSORS.TEMP"
+          ],
+          "value": [
+            "ML145.MOTOR.SENSORS.TEMP"
+          ]
+        },
+        "datasource": {
+          "type": "influxdb",
+          "uid": "9H1scz-7k"
+        },
+        "definition": "SHOW FIELD KEYS ON sorba_ml FROM ${dataset_id}",
+        "hide": 0,
+        "includeAll": false,
+        "label": "X Axis",
+        "multi": true,
+        "name": "x_axis",
+        "options": [],
+        "query": "SHOW FIELD KEYS ON sorba_ml FROM ${dataset_id}",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {
+          "selected": true,
+          "text": [
+            "ML145.MOTOR.SENSORS.SPEED"
+          ],
+          "value": [
+            "ML145.MOTOR.SENSORS.SPEED"
+          ]
+        },
+        "datasource": {
+          "type": "influxdb",
+          "uid": "9H1scz-7k"
+        },
+        "definition": "SHOW FIELD KEYS ON sorba_ml FROM ${dataset_id}",
+        "hide": 0,
+        "includeAll": false,
+        "label": "Y Axis",
+        "multi": true,
+        "name": "y_axis",
+        "options": [],
+        "query": "SHOW FIELD KEYS ON sorba_ml FROM ${dataset_id}",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {
+          "selected": true,
+          "text": [
+            "ML145.MOTOR.SENSORS.VAC"
+          ],
+          "value": [
+            "ML145.MOTOR.SENSORS.VAC"
+          ]
+        },
+        "datasource": {
+          "type": "influxdb",
+          "uid": "9H1scz-7k"
+        },
+        "definition": "SHOW FIELD KEYS ON sorba_ml FROM ${dataset_id}",
+        "hide": 0,
+        "includeAll": false,
+        "label": "Z Axis",
+        "multi": true,
+        "name": "z_axis",
+        "options": [],
+        "query": "SHOW FIELD KEYS ON sorba_ml FROM ${dataset_id}",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      }
+    ]
+  },
+  "time": {
+    "from": "2022-02-14T04:45:00.500Z",
+    "to": "2022-02-14T05:04:58.500Z"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "scatter_dataset_template",
+  "uid": null,
+  "version": 0,
+  "weekStart": "",
+  "datasource_replace": {
+    "type": ["influxdb", "mysql"],
+    "datasource_name": ["sorba_ml", "sorba_ml_mysql"]
+  }
+}
