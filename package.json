@@ -1,6 +1,6 @@
 {
   "name": "sghandler",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "",
   "source": "src/index.js",
   "type": "module",
