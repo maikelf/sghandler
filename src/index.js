@@ -165,7 +165,7 @@ export class dashboard {
         );
     }
 
-    createDatasetBoards(dataset, visualizationInfo) {
+    async createDatasetBoards(dataset, visualizationInfo) {
         let datasetPreviusDashboard = [];
         
         if (dataset.dashboards) {
