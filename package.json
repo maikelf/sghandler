@@ -1,6 +1,6 @@
 {
   "name": "sghandler",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "",
   "source": "src/index.js",
   "type": "module",
@@ -17,8 +17,5 @@
   "dependencies": {
     "axios": "^0.26.1"
   },
-  "devDependencies": {
-    "microbundle": "^0.14.2"
-  },
-  "files": ["src", "package.json", "README.md", "LICENCE"]
+  "files": ["src/templates", "src/index.js", "package.json", "README.md", "LICENCE"]
 }
