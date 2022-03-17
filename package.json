@@ -1,6 +1,6 @@
 {
   "name": "sghandler",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "",
   "source": "src/index.js",
   "type": "module",
@@ -25,8 +25,8 @@
     "axios": "^0.26.1"
   },
   "files": [
-    "src/templates",
-    "src/index.js",
+    "templates",
+    "index.js",
     "package.json",
     "README.md",
     "LICENCE"
