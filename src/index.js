@@ -223,4 +223,3 @@ export class dashboard {
         return Promise.resolve(visualizationInfo)
     }
 }
-export default hello;
