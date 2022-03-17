@@ -1,5 +1,6 @@
 import axios from "axios";
-import {templates} from "./templates/templates";
+import {templates} from "./templates/templates.js";
+
 export class dashboard {
     
     constructor(config) {
@@ -116,7 +117,7 @@ export class dashboard {
         );
     }
 
-    createDashboard(config, payload) {
+    createDashboard(payload) {
         return axios.post(`${this.url}/dashboards/db`, payload, this.config)
         .then(
             newBoard => newBoard.data,
