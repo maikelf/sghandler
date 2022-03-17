@@ -1,6 +1,7 @@
 import axios from "axios";
 import {templates} from "./templates/templates";
 export class dashboard {
+    
     constructor(config) {
         this.url = config.proxy ? `http://${config.host}/${config.proxy}/api` :  `http://${config.host}:${config.port}/api`;
         this.config = {
@@ -12,7 +13,6 @@ export class dashboard {
         this.blackList = ['2D', '3D', '2D,3D'];
     }
 
-    
     buildDatasetBoardFromTemplate(
         template,
         tags,
