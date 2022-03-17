@@ -8,8 +8,15 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "lint-staged": {
-    "*.js": ["prettier --write", "eslint --fix", "git add"],
-    "*.{json,md}": ["prettier --write", "git add"]
+    "*.js": [
+      "prettier --write",
+      "eslint --fix",
+      "git add"
+    ],
+    "*.{json,md}": [
+      "prettier --write",
+      "git add"
+    ]
   },
   "keywords": [],
   "author": "Maikel Fernandez <mfernandez@itgtec.com>",
@@ -17,5 +24,11 @@
   "dependencies": {
     "axios": "^0.26.1"
   },
-  "files": ["src/templates", "src/index.js", "package.json", "README.md", "LICENCE"]
+  "files": [
+    "src/templates",
+    "src/index.js",
+    "package.json",
+    "README.md",
+    "LICENCE"
+  ]
 }
