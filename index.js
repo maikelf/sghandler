@@ -4,11 +4,11 @@ import {templates} from "./templates/templates.js";
 export class dashboard {
     
     constructor(config) {
-        this.url = config.proxy ? `http://${config.host}/${config.proxy}/api` :  `http://${config.host}:${config.port}/api`;
+        this.url = config.URL || config.proxy ? `http://${config.host}/${config.proxy}/api` :  `http://${config.host}:${config.port}/api`;
         this.config = {
             auth: {
-              username: config.user,
-              password: config.password
+              username: config.USER,
+              password: config.PASS
             }
         };
         this.blackList = ['2D', '3D', '2D,3D'];
@@ -16,18 +16,18 @@ export class dashboard {
 
     // TEMPLATES
     async getInstancePayload(title, template, tags, previus, folderName) {
-        let payload = Object.assign({}, templates[template]);
+        let payload = Object.assign({}, template);
         // Get Datasources
-        let ML_DATASOURCES = await this.getDatasources(null);
+        let GDATASOURCES = await this.getDatasources(null);
         // Get Folder
-        let ML_TRAINER_FOLDER = await this.getFolder(folderName);
-        if (!ML_TRAINER_FOLDER) {
-            ML_TRAINER_FOLDER = await this.createFolder(folderName);
+        let FOLDER = await this.getFolder(folderName);
+        if (!FOLDER) {
+            FOLDER = await this.createFolder(folderName);
         }
 
         const datasources = {};
         payload.datasource_replace.type.forEach((t, i) => {
-            const DS = ML_DATASOURCES.find(item => item['type'] === t && item['name'] === payload.datasource_replace.datasource_name[i]);
+            const DS = GDATASOURCES.find(item => item['type'] === t && item['name'] === payload.datasource_replace.datasource_name[i]);
             datasources[t] = DS ? DS['uid'] : null;
         })
 
@@ -73,7 +73,7 @@ export class dashboard {
         // -- REMOVE UNNECESSARY --
         delete data.datasource_replace;
 
-        return {dashboard: payload, folderId: ML_TRAINER_FOLDER.folderId || 0, overwrite: true};;
+        return {dashboard: payload, folderId: FOLDER.folderId || 0, overwrite: true};
     }
 
     getDatsetPayload(
@@ -197,6 +197,20 @@ export class dashboard {
             success => null,
             error => error
         )
+    }
+
+    getDashboard(uid) {
+        return axios.get(`${this.url}/dashboards/uid/${uid}`, this.config)
+        .then(
+            board => {
+                if(!board.data) {
+                    return Promise.resolve(null);
+                } else {
+                    return Promise.resolve(board.data);
+                }
+            },
+            error => null
+        );
     }
 
     // DATASOURCE
