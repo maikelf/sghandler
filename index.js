@@ -14,7 +14,69 @@ export class dashboard {
         this.blackList = ['2D', '3D', '2D,3D'];
     }
 
-    buildDatasetBoardFromTemplate(
+    // TEMPLATES
+    async getInstancePayload(title, template, tags, previus, folderName) {
+        let payload = Object.assign({}, templates[template]);
+        // Get Datasources
+        let ML_DATASOURCES = await this.getDatasources(null);
+        // Get Folder
+        let ML_TRAINER_FOLDER = await this.getFolder(folderName);
+        if (!ML_TRAINER_FOLDER) {
+            ML_TRAINER_FOLDER = await this.createFolder(folderName);
+        }
+
+        const datasources = {};
+        payload.datasource_replace.type.forEach((t, i) => {
+            const DS = ML_DATASOURCES.find(item => item['type'] === t && item['name'] === payload.datasource_replace.datasource_name[i]);
+            datasources[t] = DS ? DS['uid'] : null;
+        })
+
+        // Interpolation
+        payload.tags = tags || [];
+        payload.iteration = new Date().getTime();
+        if (title) {
+            payload.title = title;
+        }
+        if (previus) {
+            payload.id = previus.id || null;
+            payload.version = previus.version || 0;
+        }
+
+        // Panels
+        const panels =  payload.panels;
+
+        panels.forEach(p => {
+            if (p.datasource) { 
+                const uid = datasources[p.datasource.type];
+                if (uid) {
+                    p.datasource.uid = uid;
+                }
+            }
+
+            if (p.targets) {
+                p.targets.forEach(pt => {
+                    if (pt.datasource) {
+                        const tuid = datasources[pt.datasource.type];
+                        if (tuid) {
+                            pt.datasource.uid = tuid;
+                        }
+                    }
+                })
+            }
+        })
+
+        payload.panels = panels;
+
+        // Templating
+        // TODO
+
+        // -- REMOVE UNNECESSARY --
+        delete data.datasource_replace;
+
+        return {dashboard: payload, folderId: ML_TRAINER_FOLDER.folderId || 0, overwrite: true};;
+    }
+
+    getDatsetPayload(
         template,
         tags,
         dataset,
@@ -95,7 +157,8 @@ export class dashboard {
         return {dashboard: data, folderId: folder.folderId || 0, overwrite: true};
     }
 
-    getFolders(folderName) {
+    // FOLDERS
+    getFolder(folderName) {
         return axios.get(`${this.url}/folders`, this.config)
         .then(
             folders => {
@@ -117,17 +180,26 @@ export class dashboard {
         );
     }
 
+    // DASHBOARD
     createDashboard(payload) {
         return axios.post(`${this.url}/dashboards/db`, payload, this.config)
         .then(
             newBoard => newBoard.data,
             error => {
-                console.log(error)
                 return null;
             }
         );
     }
 
+    removeDashboard(uid) {
+        return axios.delete(`${this.url}/dashboards/db/${uid}`, this.config)
+        .then(
+            success => null,
+            error => error
+        )
+    }
+
+    // DATASOURCE
     getDatasources(datasourceNames) {
         return axios.get(`${this.url}/datasources`, this.config)
         .then(
@@ -179,7 +251,7 @@ export class dashboard {
        
         if (visualizationInfo.length) {
             const folderName = `DATASET:${dataset.id}`;
-            let ML_TRAINER_FOLDER = await this.getFolders(folderName);
+            let ML_TRAINER_FOLDER = await this.getFolder(folderName);
             let ML_DATASOURCES = await this.getDatasources(null); 
 
             if (!ML_TRAINER_FOLDER) {
@@ -196,7 +268,7 @@ export class dashboard {
                     }
                 }
 
-                const payload = this.buildDatasetBoardFromTemplate(
+                const payload = this.getDatsetPayload(
                     e.template_name,
                     ['ML Trainer', 'Dataset', e.label],
                     dataset,
