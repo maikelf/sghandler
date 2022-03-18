@@ -8,26 +8,15 @@
 
 
 ```
-import {dashboard} from 'sghandler';
+const Dashboard = require('sghandler/index.js');
 
 const config = {
-    host: 'localhost',
+    host: '192.168.1.145',
     port: '3000',
-    user: 'admin',
-    password: 'admin'
+    USER: 'admin',
+    PASS: 'adminpwd'
 } 
 
-const dash = new dashboard(config);
-```
-
-### Getting Datasources
-
-```
-async function getDatasources() {
-    const values = await dash.getDatasources([]);
-    console.log(values);
-}
-
-getDatasources();
+const dash = new Dashboard(config);
 
 ```

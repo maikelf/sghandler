@@ -1,7 +1,7 @@
-import axios from "axios";
-import {templates} from "./templates/templates.js";
+const axios = require('axios');
+const templates = require('./templates/templates.js');
 
-export class dashboard {
+class Dashboard {
     
     constructor(config) {
         this.url = config.URL || config.proxy ? `http://${config.host}/${config.proxy}/api` :  `http://${config.host}:${config.port}/api`;
@@ -15,6 +15,10 @@ export class dashboard {
     }
 
     // TEMPLATES
+    getTemplate(templateName) {
+        return templates[templateName];
+    }
+
     async getInstancePayload(title, template, tags, previus, folderName) {
         let payload = Object.assign({}, template);
         // Get Datasources
@@ -310,3 +314,5 @@ export class dashboard {
         return Promise.resolve(visualizationInfo)
     }
 }
+
+module.exports = Dashboard;

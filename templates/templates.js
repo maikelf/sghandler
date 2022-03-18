@@ -1,6 +1,3 @@
-import { createRequire } from "module"
-const require = createRequire(import.meta.url)
-
 const box_dataset_template =  require("./box_dataset_template.json");
 const correlation_dataset_template =  require("./correlation_dataset_template.json");
 const histogram_and_pareto_dataset_template =  require("./histogram_and_pareto_dataset_template.json");
@@ -21,4 +18,4 @@ const templates = {
     trend_dataset_template
 };
 
-export { templates };
+module.exports = templates;
